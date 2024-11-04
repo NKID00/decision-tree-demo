@@ -1,3 +1,5 @@
+mod tree;
+
 use std::collections::HashSet;
 
 use js_sys::{Array, Object, Reflect};
