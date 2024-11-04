@@ -328,6 +328,7 @@ pub fn Main() -> impl IntoView {
     let chart_ref: NodeRef<html::Canvas> = create_node_ref();
     let dataset_not_found_alert: NodeRef<html::Custom> = create_node_ref();
     let x_y_same_alert: NodeRef<html::Custom> = create_node_ref();
+    let tree_not_trained_alert: NodeRef<html::Custom> = create_node_ref();
     create_effect(move |previous_chart: Option<Option<JsValue>>| {
         let chart = chart_ref()?;
         if previous_chart.is_none() {
@@ -480,7 +481,11 @@ pub fn Main() -> impl IntoView {
                             toast_alert(dataset_not_found_alert);
                             return;
                         };
-                        let result = classify(&tree().unwrap(), classify_data().unwrap());
+                        let Some(tree) = tree() else {
+                            toast_alert(tree_not_trained_alert);
+                            return;
+                        };
+                        let result = classify(&tree, classify_data().unwrap());
                         let correct_rate = assess(&dataset, &result);
                         let duration = (0.001f64).max(timestamp() - begin);
                         log!(log_ref, "分类完毕, 测试集分类正确率 {:.3}%, 用时 {duration:.3} 秒", correct_rate * 100.);
@@ -493,6 +498,10 @@ pub fn Main() -> impl IntoView {
                 <sl-alert variant="danger" duration="3000" closable ref=x_y_same_alert>
                     <sl-icon slot="icon" name="exclamation-octagon"></sl-icon>
                     "X 轴和 Y 轴数据不能相同"
+                </sl-alert>
+                <sl-alert variant="danger" duration="3000" closable ref=tree_not_trained_alert>
+                    <sl-icon slot="icon" name="exclamation-octagon"></sl-icon>
+                    "必须先训练数据集"
                 </sl-alert>
             </div>
             <div class="chart">
