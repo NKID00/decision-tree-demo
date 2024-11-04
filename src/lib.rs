@@ -36,20 +36,6 @@ pub fn App() -> impl IntoView {
     }
 }
 
-#[component]
-pub fn Button(#[prop(default = 1)] increment: i32) -> impl IntoView {
-    let (count, set_count) = create_signal(0);
-    view! {
-        <button
-            on:click= move |_| {
-                set_count(count() + increment)
-            }
-        >
-            "Click me: " {count}
-        </button>
-    }
-}
-
 #[derive(Debug, Clone)]
 struct DataSet {
     axises: Vec<String>,
@@ -59,12 +45,9 @@ struct DataSet {
 
 fn load_data(source: String, set_data: WriteSignal<Option<DataSet>>) {
     let csv = match source.as_str() {
-        "iris" => {
-            include_str!("../public/iris.data")
-        }
-        "dataset-2" => "",
-        "dataset-3" => "",
-        "custom" => "",
+        "iris" => include_str!("../public/iris.csv"),
+        "wine" => include_str!("../public/wine.csv"),
+        "rice" => include_str!("../public/rice.csv"),
         _ => unreachable!(),
     };
     let mut rdr = csv::ReaderBuilder::new()
@@ -287,12 +270,13 @@ pub fn Main() -> impl IntoView {
             <div class="controls">
                 <sl-select label="选择数据集" on:sl-change=move |ev: JsValue| {
                     let source = get(&get(&ev, "target"), "value").as_string().unwrap();
+                    set_x_axis(None);
+                    set_y_axis(None);
                     load_data(source, set_data);
                 }>
-                    <sl-option value="iris"> "鸢尾花 (Iris)" </sl-option>
-                    <sl-option value="dataset-2"> "数据集 2" </sl-option>
-                    <sl-option value="dataset-3"> "数据集 3" </sl-option>
-                    <sl-option value="custom"> "上传自定义数据集" </sl-option>
+                    <sl-option value="iris"> "鸢尾花的尺寸" </sl-option>
+                    <sl-option value="wine"> "红酒的理化性质" </sl-option>
+                    <sl-option value="rice"> "米粒的形状" </sl-option>
                 </sl-select>
                 <sl-select label="X 轴数据点" ref=x_ref on:sl-change=move |ev: JsValue| {
                     match get(&get(&ev, "target"), "value").as_string().unwrap().parse().ok() {

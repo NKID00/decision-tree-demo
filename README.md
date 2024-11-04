@@ -2,6 +2,12 @@
 
 Simple CART (Classification And Regression Tree) Algorithm Demonstration.
 
+Datasets were taken from UCI Machine Learning Repository and are licensed under a CC-BY 4.0 license:
+
+- Iris, https://doi.org/10.24432/C56C76
+- Wine Quality, https://doi.org/10.24432/C56S3T
+- Rice, https://doi.org/10.24432/C5MW4Z
+
 #### Copying
 
 <sup>
